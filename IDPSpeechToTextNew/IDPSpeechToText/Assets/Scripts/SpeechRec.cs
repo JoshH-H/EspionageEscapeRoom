@@ -44,7 +44,7 @@ public class SpeechRec : MonoBehaviour
             Debug.Log("PLayer is being detected");
         }
 
-        else
+        else if (playerDetection.playerDetected == false)
         {
             Recogniser.Stop();
             Debug.Log("Offline");
