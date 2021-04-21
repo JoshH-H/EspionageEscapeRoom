@@ -49,7 +49,7 @@ public class Arduino_PlayerDetect : MonoBehaviour
                     if (!busy && !_isPlayed)
                     {
 
-                        StartCoroutine(playSound());
+                        //StartCoroutine(playSound());
                         busy = true;
                         playerDetected = true;
 

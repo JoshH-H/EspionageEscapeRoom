@@ -9,29 +9,43 @@ public class ReceiveCode : MonoBehaviour
 {
     private KeywordRecognizer getSpeech;
     private Dictionary<string, Action> codeWords = new Dictionary<string, Action>();
-    public string txt;
-    public Text speechText;
+    public GameObject codeText;
+    public GameObject othertext;
     public GameObject dialoguePanel;
+
+    private Arduino_PlayerDetect playerDetection => GetComponent<Arduino_PlayerDetect>();
 
 
     private void Start()
     {
+        codeText.SetActive(false);
         codeWords.Add("one two three four five", CodeReceived);
         getSpeech = new KeywordRecognizer(codeWords.Keys.ToArray());
         getSpeech.OnPhraseRecognized += GetCodes;
-
-        getSpeech.Start();
     }
 
-    private void GetCodes(PhraseRecognizedEventArgs speech)
+    private void GetCodes(PhraseRecognizedEventArgs code)
     {
-        Debug.Log(speech.text);
-        codeWords[speech.text].Invoke();
+        Debug.Log(code.text);
+        codeWords[code.text].Invoke();
     }
 
     private void CodeReceived()
     {
-        transform.Translate(-1, 0, 0);
-        //this is a comment
+        othertext.SetActive(false);
+        codeText.SetActive(true);
+    }
+
+    private void Update()
+    {
+        if (playerDetection.playerDetected == true)
+        {
+            getSpeech.Start();
+        }
+
+        else if (playerDetection.playerDetected == false)
+        {
+            getSpeech.Stop();
+        }
     }
 }

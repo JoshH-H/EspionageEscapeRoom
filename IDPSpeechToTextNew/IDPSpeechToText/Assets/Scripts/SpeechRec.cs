@@ -4,7 +4,7 @@ using UnityEngine.Windows.Speech;
 
 public class SpeechRec : MonoBehaviour
 {
-    public Text spokenTxt;
+    //public Text spokenTxt;
     public Text recognisitions;
     private DictationRecognizer Recogniser;
 
@@ -32,22 +32,19 @@ public class SpeechRec : MonoBehaviour
         {
             Debug.LogErrorFormat("Ductation error: {0}. HResults = {1}.", error, hresult);
         };
-
-        
     }
 
     private void Update()
     {
+
         if (playerDetection.playerDetected == true)
         {
             Recogniser.Start();
-            Debug.Log("PLayer is being detected");
         }
 
         else if (playerDetection.playerDetected == false)
         {
             Recogniser.Stop();
-            Debug.Log("Offline");
         }
     }
 }
