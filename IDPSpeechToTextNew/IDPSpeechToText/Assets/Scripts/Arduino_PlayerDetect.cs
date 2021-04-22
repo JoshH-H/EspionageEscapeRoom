@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class Arduino_PlayerDetect : MonoBehaviour
 {
-    //public static SerialPort sp = new SerialPort("COM3", 9600); // Change this to match your Arduino's COM Port.
-    public static SerialPort sp = new SerialPort("COM6", 9600); // Change this to match your Arduino's COM Port.
+    public static SerialPort sp = new SerialPort("COM3", 9600); // Change this to match your Arduino's COM Port.
+    //public static SerialPort sp = new SerialPort("COM6", 9600); // Change this to match your Arduino's COM Port.
     Thread readThread = new Thread(ReadData);
     static bool checking = true;
     static public Text value;

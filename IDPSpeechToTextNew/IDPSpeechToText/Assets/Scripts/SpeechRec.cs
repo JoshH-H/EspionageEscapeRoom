@@ -4,7 +4,7 @@ using UnityEngine.Windows.Speech;
 
 public class SpeechRec : MonoBehaviour
 {
-    [SerializeField] private enum RecordingState { recording, closed, waiting };
+    [SerializeField] private enum RecordingState { recording, startRecord, closed, waiting };
     [SerializeField] private RecordingState rState = RecordingState.waiting;
 
     [SerializeField] private GameObject codeText;
@@ -22,6 +22,11 @@ public class SpeechRec : MonoBehaviour
         codeText.SetActive(false);
 
         dictationRecognizer = new DictationRecognizer();
+
+        dictationRecognizer.DictationResult += DictationRecognizer_DictationResult;
+        dictationRecognizer.DictationHypothesis += DictationRecognizer_DictationHypothesis;
+        dictationRecognizer.DictationComplete += DictationRecognizer_DictationComplete;
+        dictationRecognizer.DictationError += DictationRecognizer_DictationError;
     }
 
     private void DictationRecognizer_DictationResult(string text, ConfidenceLevel confidence)
@@ -57,6 +62,12 @@ public class SpeechRec : MonoBehaviour
 
     private void Update()
     {
+        if (speechTxt.text.Length >= 1000)
+        {
+            Debug.Log("Clear");
+            speechTxt.text = "";
+        }
+
         switch (rState)
         {
             case RecordingState.waiting:
@@ -65,9 +76,15 @@ public class SpeechRec : MonoBehaviour
 
                 break;
 
-            case RecordingState.recording:
+            case RecordingState.startRecord:
 
                 StartRecording();
+
+                break;
+
+            case RecordingState.recording:
+
+                RecordUntilNotDetected();
 
                 break;
 
@@ -85,44 +102,6 @@ public class SpeechRec : MonoBehaviour
         }
     }
 
-    private void StartRecording()
-    {
-        if (playerDetection.playerDetected == true && isEntered == false)
-        {
-            Debug.Log("player in");
-
-            dictationRecognizer.DictationResult += DictationRecognizer_DictationResult;
-            dictationRecognizer.DictationHypothesis += DictationRecognizer_DictationHypothesis;
-            dictationRecognizer.DictationComplete += DictationRecognizer_DictationComplete;
-            dictationRecognizer.DictationError += DictationRecognizer_DictationError;
-
-            dictationRecognizer.Start();
-
-            isEntered = true;
-        }
-
-        if (playerDetection.playerDetected == false)
-        {
-            rState = RecordingState.closed;
-        }
-    }
-
-    private void StopRecording()
-    {
-        if (playerDetection.playerDetected == false && isEntered == true)
-        {
-            dictationRecognizer.DictationResult -= DictationRecognizer_DictationResult;
-            dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
-            dictationRecognizer.DictationHypothesis -= DictationRecognizer_DictationHypothesis;
-            dictationRecognizer.DictationError -= DictationRecognizer_DictationError;
-
-            dictationRecognizer.Stop();
-            dictationRecognizer.Dispose();
-
-            rState = RecordingState.waiting;
-        }
-    }
-
     private void WaitForDetection()
     {
         isEntered = false;
@@ -133,54 +112,35 @@ public class SpeechRec : MonoBehaviour
         }
     }
 
+    private void StartRecording()
+    {
+        Debug.Log("player in");
 
+        isEntered = true;
 
+        rState = RecordingState.recording;
+    }
 
+    private void RecordUntilNotDetected()
+    {
+        dictationRecognizer.Start();
 
+        if (playerDetection.playerDetected == false)
+        {
+            rState = RecordingState.closed;
+        }
+    }
 
+    private void StopRecording()
+    {
+        //dictationRecognizer.DictationResult -= DictationRecognizer_DictationResult;
+        //dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
+        //dictationRecognizer.DictationHypothesis -= DictationRecognizer_DictationHypothesis;
+        //dictationRecognizer.DictationError -= DictationRecognizer_DictationError;
 
+        dictationRecognizer.Stop();
+        // dictationRecognizer.Dispose();
 
-    // BELOW WORKS TOO LEAVE FOR NOW
-
-    //public Text speechTxt;
-    //private DictationRecognizer Recogniser; 
-
-    //private Arduino_PlayerDetect playerDetection => GetComponent<Arduino_PlayerDetect>();
-
-    //private void Start()
-    //{
-    //    Recogniser = new DictationRecognizer();
-
-    //    Recogniser.DictationResult += (text, confidence) =>
-    //    {
-    //        Debug.LogFormat("Dictation result: {0}", text);
-    //        speechTxt.text += text + "\n";
-    //    };
-
-    //    Recogniser.DictationComplete += (completionCause) =>
-    //    {
-    //        if (completionCause != DictationCompletionCause.Complete)
-    //        {
-    //            Debug.LogErrorFormat("Ductation completed unsuccesfully: {0}.", completionCause);
-    //        }
-    //    };
-
-    //    Recogniser.DictationError += (error, hresult) =>
-    //    {
-    //        Debug.LogErrorFormat("Ductation error: {0}. HResults = {1}.", error, hresult);
-    //    };
-    //}
-
-    //private void Update()
-    //{
-    //    if (playerDetection.playerDetected == true)
-    //    {
-    //        Recogniser.Start();
-    //    }
-
-    //    else if (playerDetection.playerDetected == false)
-    //    {
-    //        Recogniser.Stop();
-    //    }
-    //}
+        rState = RecordingState.waiting;
+    }
 }
