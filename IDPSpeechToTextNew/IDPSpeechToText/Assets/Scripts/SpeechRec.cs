@@ -4,9 +4,8 @@ using UnityEngine.Windows.Speech;
 
 public class SpeechRec : MonoBehaviour
 {
-    //public Text spokenTxt;
-    public Text recognisitions;
-    private DictationRecognizer Recogniser;
+    public Text speechTxt;
+    private DictationRecognizer Recogniser; 
 
     private Arduino_PlayerDetect playerDetection => GetComponent<Arduino_PlayerDetect>();
 
@@ -17,7 +16,7 @@ public class SpeechRec : MonoBehaviour
         Recogniser.DictationResult += (text, confidence) =>
         {
             Debug.LogFormat("Dictation result: {0}", text);
-            recognisitions.text += text + "\n";
+            speechTxt.text += text + "\n";
         };
 
         Recogniser.DictationComplete += (completionCause) =>
@@ -36,7 +35,6 @@ public class SpeechRec : MonoBehaviour
 
     private void Update()
     {
-
         if (playerDetection.playerDetected == true)
         {
             Recogniser.Start();
