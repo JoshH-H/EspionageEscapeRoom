@@ -3,7 +3,9 @@ guid: 64264e6c06975fc44ac8a446fa21d3c4
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - motionFx: {fileID: 8300000, guid: d817b7235353b8c47949b4d8b033a1e4, type: 3}
+  - audio1: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

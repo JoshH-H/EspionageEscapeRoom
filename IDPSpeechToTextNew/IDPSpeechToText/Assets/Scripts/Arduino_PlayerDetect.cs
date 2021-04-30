@@ -1,16 +1,11 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System.IO.Ports;
-using System.Threading;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Arduino_PlayerDetect : MonoBehaviour
 {
-    public static SerialPort sp = new SerialPort("COM3", 9600); // Change this to match your Arduino's COM Port.
-    //public static SerialPort sp = new SerialPort("COM6", 9600); // Change this to match your Arduino's COM Port.
-    Thread readThread = new Thread(ReadData);
-    static bool checking = true;
+    public static SerialPort sp = new SerialPort("COM3", 9600);
     static public Text value;
 
     private bool busy = false;
@@ -20,17 +15,13 @@ public class Arduino_PlayerDetect : MonoBehaviour
     public AudioClip motionFx;
     public AudioSource audio1;
 
-    // Start is called before the first frame update
     void Start()
     {
         value = GameObject.Find("ValueText").GetComponent<Text>();
-        value.text = "Detecting Player";
+        value.text = "RECEIVING : OFF";
         OpenConnection();
-        readThread.Start();
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (sp.IsOpen)
@@ -39,27 +30,23 @@ public class Arduino_PlayerDetect : MonoBehaviour
             try
             {
                 string message = sp.ReadLine();
-
                 bool myBool = bool.Parse(message);
-
 
                 if (myBool == true)
                 {
-                    value.text = "Player Detected";
+                    value.text = "RECEIVING : ON";
                     if (!busy && !_isPlayed)
                     {
-                        //StartCoroutine(playSound());
+                        StartCoroutine(PlaySound());
                         busy = true;
-                        
-
                     }
 
                     playerDetected = true;
-
                 }
+
                 else if (myBool == false)
                 {
-                    value.text = "Player Not In Range";
+                    value.text = "RECEIVING : OFF";
                     _isPlayed = false;
                     playerDetected = false;
                 }
@@ -71,14 +58,11 @@ public class Arduino_PlayerDetect : MonoBehaviour
             }
 
         }
-
-
     }
 
     private void OnApplicationQuit()
     {
         sp.Close();
-        checking = false;
     }
 
     void OpenConnection()
@@ -88,33 +72,13 @@ public class Arduino_PlayerDetect : MonoBehaviour
         print("Opening port");
     }
 
-
-    public static void ReadData()
-    {
-        while (checking)
-        {
-            try
-            {
-                //string message = sp.ReadLine();
-                //print(message);
-
-            }
-            catch
-            {
-                print("Caught Error!");
-            }
-        }
-    }
-
-    IEnumerator playSound()
+    IEnumerator PlaySound()
     {
         AudioClip clip = motionFx;
         audio1.PlayOneShot(clip);
         yield return new WaitForSeconds(clip.length);
         busy = false;
         _isPlayed = true;
-
     }
-
 }
 

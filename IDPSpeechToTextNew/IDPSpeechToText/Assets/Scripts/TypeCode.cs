@@ -1,24 +1,26 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TypeCode : MonoBehaviour
 {
-    [SerializeField] private float timer = 0.1f;
+    public float timer = 0.1f;
 
-    [SerializeField] private string partOne;
-    [SerializeField] private string ptOneCurrent = "";
+    public Text codeText;
+    public string partOne;
+    public string txtCurrent;
 
-    // Start is called before the first frame update
-    private void Start() => StartCoroutine(IntroTextEntry());
+    private void Start()
+    {
+        StartCoroutine(IntroTextEntry());
+    }
 
     private IEnumerator IntroTextEntry()
     {
         for (int i = 0; i < partOne.Length; i++)
         {
-            ptOneCurrent = partOne.Substring(0, i);
-            this.GetComponent<Text>().text = ptOneCurrent;
+            txtCurrent = partOne.Substring(0, i);
+            codeText.text = txtCurrent;
 
             yield return new WaitForSeconds(timer);
         }
